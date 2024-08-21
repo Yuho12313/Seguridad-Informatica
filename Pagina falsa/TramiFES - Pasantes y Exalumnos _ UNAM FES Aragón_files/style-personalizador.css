@@ -1,0 +1,26 @@
+
+/* 
+    Created on : Mar 13, 2019, 8:11:26 PM
+    Author     : eldantek
+*/
+
+.sf-menu a{
+    color: rgba(1, 0, 0, 0.8);
+    color: #aef56d;
+}
+
+#fh5co-hero {
+    background-color: #115c9f;
+}
+
+/*@media screen and (max-width: 768px) {
+    #fh5co-hero {
+        background-position: center center;
+    }
+}*/
+
+#fh5co-hero:after {
+    background: #115c9f; 
+    background-color: #115c9f;
+}
+
