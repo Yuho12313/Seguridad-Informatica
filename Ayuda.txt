@@ -1,8 +1,0 @@
-area SI 1.c: In function ‘find_keyboard_device’:
-Tarea SI 1.c:40:59: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 245 [-Wformat-truncation=]
-   40 |             snprintf(device_path, sizeof(device_path), "%s%s", INPUT_DIR, entry->d_name);
-      |                                                           ^~
-Tarea SI 1.c:40:13: note: ‘snprintf’ output between 12 and 267 bytes into a destination of size 256
-   40 |             snprintf(device_path, sizeof(device_path), "%s%s", INPUT_DIR, entry->d_name);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
