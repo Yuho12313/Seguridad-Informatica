@@ -52,8 +52,7 @@ char* find_keyboard_device() {
             ioctl(fd, EVIOCGID, &device_info);
             close(fd);
 
-            // Filtrar por ID de fabricante y producto (puede variar según el teclado)
-            if (device_info.bustype == BUS_USB) {  // Verificar si el dispositivo es USB
+            if (device_info.bustype == BUS_USB) { 
                 strncpy(keyboard_device, device_path, sizeof(keyboard_device) - 1);
                 keyboard_device[sizeof(keyboard_device) - 1] = '\0';
                 closedir(dp);
