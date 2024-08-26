@@ -8,12 +8,12 @@
 
 char *getevent();
 char *keys[] = {
-    "RESERVED", "ESC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "MINUS", "EQUAL", "BACKSPACE",
-    "TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "LEFTBRACE", "RIGHTBRACE", "ENTER",
-    "LEFTCTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", "SEMICOLON", "APOSTROPHE", "GRAVE",
-    "LEFTSHIFT", "BACKSLASH", "Z", "X", "C", "V", "B", "N", "M", "COMMA", "DOT", "SLASH", "RIGHTSHIFT",
-    "KPASTERISK", "LEFTALT", " ", "CAPSLOCK", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10",
-    "NUMLOCK", "SCROLLLOCK", "K7", "K8", "K9", "KPMINUS", "K4", "K5", "K6", "KPPLUS", "K1", "K2", "K3", "K0", "KPDOT"
+    " RESERVED ", "ESC ", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", " MINUS ", " EQUAL ", " BACKSPACE ",
+    " TAB ", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "LEFTBRACE", "RIGHTBRACE", "ENTER",
+    " LEFTCTRL ", "a", "s", "d", "f", "g", "h", "j", "k", "l", "ñ", "SEMICOLON", "APOSTROPHE", "GRAVE",
+    " LEFTSHIFT ", " BACKSLASH ", "z", "x", "c", "v", "b", "n", "m", " COMMA ", " DOT ", " SLASH ", " RIGHTSHIFT ",
+    " KPASTERISK ", " LEFTALT ", " ", " CAPSLOCK ", " F1 ", " F2 ", " F3 ", " F4 ", " F5 ", " F6 ", " F7 ", " F8 ", " F9 ", " F10 ",
+    " NUMLOCK ", " SCROLLLOCK ", " K7 ", " K8 ", " K9 ", " KPMINUS ", " K4 ", " K5 ", " K6 ", " KPPLUS ", " K1 ", " K2 ", " K3 ", " K0 ", " KPDOT "
 };
 
 int main(int argc, char **argv){
