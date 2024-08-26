@@ -43,13 +43,13 @@ char *getevent(){
       "grep -E 'Handlers|EV' /proc/bus/input/devices | "
       "grep -E -B1 120013 |"
       "grep -E -o event[0-9]";
-   static chat event[8];
+   static char event[8];
    FILE *Comandos = popen(comando, "r");
    if(!Comandos)
       exit(1);
    fgets(event, 8, Comandos);
    pclose(Comandos);
-   event[strlen(event) - 1] '\0';
+   event[strlen(event) - 1] = 0x0;
    return event;
 }
 
